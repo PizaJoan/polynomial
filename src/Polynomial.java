@@ -1,7 +1,7 @@
 
 
 public class Polynomial {
-    float [] nums;
+    float [] nums = { 0 };
 
     // Constructor per defecte. Genera un polinomi zero
     public Polynomial() {
@@ -53,15 +53,23 @@ public class Polynomial {
     public String toString() {
         StringBuilder sb =  new StringBuilder();
         for (int i = 0; i < this.nums.length; i++) {
-            if (this.nums[i] == 0 && !sb.toString().contains("0"))  {
-                sb.append((int) this.nums[i]);
-                continue;
+            if (this.nums.length == 1) {
+                if (this.nums[i] == 0 )  {
+                    sb.append(0);
+                    continue;
+                }
             }
-            if (this.nums[i] == 1) {
-                sb.setCharAt(i,'x');
-            }
-            if (this.nums[i] != 1 && this.nums[i] != 0) {
-                sb.append((int) this.nums[i] + "x^" + this.nums.length+1 );
+            if (this.nums.length > 1) {
+                if (this.nums[i] == 0 && i == 0) {
+                    sb.append(0);
+                    continue;
+                }
+                if (this.nums[i] == 1) {
+                    sb.setCharAt(i,'x');
+                }
+                if (this.nums[i] != 1 && this.nums[i] != 0) {
+                    sb.append((int) this.nums[i] + "x^" + this.nums.length+1 );
+                }
             }
         }
         return sb.toString();

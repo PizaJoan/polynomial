@@ -77,9 +77,8 @@ public class Polynomial {
     public String toString() {
         StringBuilder sb =  new StringBuilder();
         for (int i = 0; i < this.nums.length; i++) {
-            if (this.nums[i] == 0 && i == 0) {
-                sb.append((int) this.nums[i]);
-                continue;
+            if (this.nums[0] == 0 && i == 0) {
+                return "0";
             }
             if (this.nums.length == 1) {
                 if (this.nums[i] == 0 )  {

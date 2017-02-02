@@ -8,8 +8,8 @@ public class PolynomialTest {
     public void constructs1() {
         Polynomial p;
 
- //       p = new Polynomial(new float[]{1, 5});
-  //      assertEquals("x + 5", p.toString());
+        p = new Polynomial(new float[]{1, 5});
+        assertEquals("x + 5", p.toString());
 
         p = new Polynomial(new float[]{0});
         assertEquals("0", p.toString());

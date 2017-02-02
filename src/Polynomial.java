@@ -45,7 +45,8 @@ public class Polynomial {
     // Torna "true" si els polinomis són iguals. Això és un override d'un mètode de la classe Object
     @Override
     public boolean equals(Object o) {
-        return false;
+        Polynomial x = (Polynomial) o;
+        return x.toString().equals(this.toString());
     }
 
     // Torna la representació en forma de String del polinomi. Override d'un mètode de la classe Object
@@ -55,20 +56,24 @@ public class Polynomial {
         for (int i = 0; i < this.nums.length; i++) {
             if (this.nums.length == 1) {
                 if (this.nums[i] == 0 )  {
-                    sb.append(0);
+                    sb.append((int) this.nums[i]);
                     continue;
+                }
+                if (this.nums[i] != 0) {
+                    sb.append((int) this.nums[i]);
                 }
             }
-            if (this.nums.length > 1) {
+            if (this.nums.length >= 2) {
                 if (this.nums[i] == 0 && i == 0) {
-                    sb.append(0);
+                    sb.append((int) this.nums[i]);
                     continue;
                 }
-                if (this.nums[i] == 1) {
-                    sb.setCharAt(i,'x');
-                }
-                if (this.nums[i] != 1 && this.nums[i] != 0) {
-                    sb.append((int) this.nums[i] + "x^" + this.nums.length+1 );
+                if (this.nums[i] != 0) {
+                    if (this.nums[i] == 1) {
+                        sb.append('x');
+                    }
+                    if (this.nums[i] != 1)
+                    sb.append(" + " + (int) this.nums[i]);
                 }
             }
         }

@@ -63,17 +63,43 @@ public class Polynomial {
                     sb.append((int) this.nums[i]);
                 }
             }
-            if (this.nums.length >= 2) {
                 if (this.nums[i] == 0 && i == 0) {
                     sb.append((int) this.nums[i]);
                     continue;
                 }
-                if (this.nums[i] != 0) {
+                if (this.nums.length == 2) {
                     if (this.nums[i] == 1) {
-                        sb.append('x');
+                        sb.append("x");
                     }
-                    if (this.nums[i] != 1)
-                    sb.append(" + " + (int) this.nums[i]);
+                    if (this.nums[i] != 1 && this.nums[i] > 0) {
+                        sb.append(" + " + (int) this.nums[i]);
+                    }
+                    if (this.nums[i] != 1 && this.nums[i] < 0) {
+                        sb.append(" - " + (int) this.nums[i]*-1);
+                    }
+                }
+            if (this.nums.length > 2) {
+                if (this.nums[i] != 0 && this.nums.length-i == this.nums.length) {
+                    sb.append((int) this.nums[i] + "x^" + (this.nums.length-1-i));
+                    continue;
+                }
+                if (this.nums[i] != 0 && this.nums.length-i-1 > 1 && this.nums[i] > 0) {
+                    sb.append(" + " + (int) this.nums[i] + "x^" + (this.nums.length-1-i));
+                }
+                if (this.nums[i] != 0 && this.nums.length-i-1 > 1 && this.nums[i] < 0) {
+                    sb.append(" - " + (int) this.nums[i]*-1 + "x^" + (this.nums.length-1-i));
+                }
+                if (this.nums[i] != 0 && this.nums.length-1-i == 1 && this.nums[i] > 0) {
+                    sb.append(" + " + (int) this.nums[i] + "x");
+                }
+                if (this.nums[i] != 0 && this.nums.length-1-i == 1 && this.nums[i] < 0) {
+                    sb.append(" - " + (int) this.nums[i]*-1 + "x");
+                }
+                if (this.nums[i] != 0 && this.nums.length-1-i == 0 && this.nums[i] < 0) {
+                    sb.append(" - " + (int) this.nums[i]*-1);
+                }
+                if (this.nums[i] != 0 && this.nums.length-1-i == 0 && this.nums[i] > 0) {
+                    sb.append(" + " + (int) this.nums[i]*-1);
                 }
             }
         }

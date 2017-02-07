@@ -1,5 +1,4 @@
 
-
 public class Polynomial {
     float [] nums = { 0 };
 
@@ -19,31 +18,84 @@ public class Polynomial {
 
     // Constructor a partir d'un string
     public Polynomial(String s) {
-        String auxiliar;
-        int grau = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '^') {
-                grau = (int) s.charAt(i+1);
+        float signe = 1;
+        String [] original = s.split(" ");
+        for (String ss: original) {
+            if (ss.equals("+")) {
+                signe = 1;
+                continue;
             }
+            if (ss.equals("-")) {
+                signe = -1;
+                continue;
+            }
+
+            int exponent = treuExp(ss);
+            float coeficient = treuCoe(ss)*signe;
+            setCoef(coeficient,exponent);
         }
-        float [] pol = new float[grau+1];
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) != ' ') {
-                if (s.charAt(i) < 0 || s.charAt(i) > 0) {
-                    if (i > 0 && s.charAt(i-1) != '^') {
-                        if (s.charAt(i) > 0) {
-                            pol[i] = s.charAt(i);
-                        }
-                        if (s.charAt(i) < 0)
-                            pol[i] = s.charAt(i)*-1;
-                    }
+        flipIt();
+    }
+
+    private void flipIt() {
+        for (int i = 0; i < this.nums.length / 2; i++) {
+            float aux = this.nums[i];
+            this.nums[i] = this.nums[this.nums.length-i-1];
+            this.nums[this.nums.length-i-1] = aux;
+        }
+    }
+
+    private void setCoef(float coef, int expo) {
+        if (expo >= this.nums.length) {
+            float [] aux = new float[expo+1];
+            aux[expo] += coef;
+            for (int i = 0; i < aux.length; i++) {
+                if (i <= this.nums.length-1) {
+                    aux[i] += this.nums[i];
+                }
+            }
+            this.nums = aux;
+        } else {
+            this.nums[expo] += coef;
+        }
+    }
+
+    private int treuExp(String s) {
+        int exp = 0;
+        if (s.contains("x") && !s.contains("^")) {
+            exp = 1;
+            return exp;
+        }
+        else if (!s.contains("x") && !s.contains("^")) {
+            exp = 0;
+            return exp;
+        } else {
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == '^' ) {
+                    exp = Integer.parseInt(s.substring(i+1));
+                    return exp;
                 }
             }
         }
-        this.nums = pol;
-
+        return exp;
     }
 
+    private float treuCoe(String s) {
+        float coe = 1;
+
+        if (!s.contains("x") && !s.contains("^")) {
+            coe = Float.parseFloat(s);
+            return coe;
+        } else {
+            for (int i = 0; i < s.length(); i++) {
+                if (s.charAt(i) == 'x' && i > 0) {
+                    coe = Float.parseFloat(s.substring(0, i));
+                    return coe;
+                }
+            }
+        }
+        return coe;
+    }
     // Suma el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     public Polynomial add(Polynomial p) {
         return null;
@@ -77,16 +129,22 @@ public class Polynomial {
     public String toString() {
         StringBuilder sb =  new StringBuilder();
         for (int i = 0; i < this.nums.length; i++) {
-            if (this.nums[0] == 0 && i == 0) {
-                return "0";
+            if (this.nums[i] == 0) {
+                if (i == 0 && this.nums[i] == 0 && this.nums.length > 0) {
+                    if (this.nums.length > 1 && this.nums[1] > 0) {
+                        continue;
+                    }
+                    return "0";
+                }
+                continue;
             }
             if (this.nums.length == 1) {
                 if (this.nums[i] == 0 )  {
-                    sb.append((int) this.nums[i]);
-                    continue;
+                    return "0";
                 }
                 if (this.nums[i] != 0) {
                     sb.append((int) this.nums[i]);
+                    continue;
                 }
             }
                 if (this.nums.length == 2) {
@@ -94,10 +152,15 @@ public class Polynomial {
                         sb.append("x");
                         continue;
                     }
+                    if (this.nums[i] == 0) {
+                        sb.append("0");
+                        continue;
+                    }
                     if (this.nums[i] != 1 && i == 0) {
                         sb.append((int) this.nums[i] + "x");
                         continue;
                     }
+
                     if (this.nums[i] != 1 && this.nums[i] != 0 && this.nums[i] > 0 && i > 0) {
                         sb.append(" + " + (int) this.nums[i]);
                         continue;
@@ -107,7 +170,7 @@ public class Polynomial {
                         continue;
                     }
                 }
-            if (this.nums.length > 2) {
+            if (this.nums.length > 2 ) {
                 if (this.nums[i] == 1 && this.nums.length-i == this.nums.length) {
                     sb.append("x^" + (this.nums.length-1-i));
                     continue;
@@ -136,6 +199,10 @@ public class Polynomial {
                     sb.append(" - x^" + (this.nums.length-1-i));
                     continue;
                 }
+                if (i > 0 && this.nums.length == 3 && this.nums[0] == 0 && this.nums[1] > 0 || this.nums[1] < 0) {
+                    sb.append((int) this.nums[1] + "x");
+                    continue;
+                }
                 if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 1 && this.nums[i] > 0) {
                     sb.append(" + " + (int) this.nums[i] + "x");
                     continue;
@@ -151,6 +218,9 @@ public class Polynomial {
                 if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 0 && this.nums[i] > 0) {
                     sb.append(" + " + (int) this.nums[i]);
                     continue;
+                }
+                if (!sb.toString().contains("0") && i > 0) {
+                    sb.append("0");
                 }
             }
         }

@@ -12,7 +12,19 @@ public class Polynomial {
     public Polynomial(float[] cfs) {
         this.nums = new float[cfs.length];
         for (int i = 0; i < cfs.length; i++) {
-            this.nums[i] = cfs[i];
+            if (cfs[0] ==  0) {
+                for (int j = 0; j < cfs.length; j++) {
+                    if (cfs[j] != 0) {
+                        this.nums = new float[cfs.length-j];
+                        for (int k = 0; k < cfs.length-j; k++) {
+                            this.nums[k] = cfs[k+j];
+                        }
+                        break;
+                    }
+                }
+            } else {
+                this.nums[i] = cfs[i];
+            }
         }
     }
 
@@ -29,9 +41,11 @@ public class Polynomial {
                 signe = -1;
                 continue;
             }
-
             int exponent = treuExp(ss);
             float coeficient = treuCoe(ss)*signe;
+            if (coeficient == 0) {
+                continue;
+            }
             setCoef(coeficient,exponent);
         }
         this.nums = flipIt(this.nums);
@@ -66,15 +80,10 @@ public class Polynomial {
         if (s.contains("x") && !s.contains("^")) {
             exp = 1;
             return exp;
-        }
-        else if (!s.contains("x") && !s.contains("^")) {
-            exp = 0;
-            return exp;
         } else {
             for (int i = 0; i < s.length(); i++) {
                 if (s.charAt(i) == '^' ) {
                     exp = Integer.parseInt(s.substring(i+1));
-                    return exp;
                 }
             }
         }
@@ -83,7 +92,6 @@ public class Polynomial {
 
     private float treuCoe(String s) {
         float coe = 1;
-
         if (!s.contains("x") && !s.contains("^")) {
             coe = Float.parseFloat(s);
             return coe;
@@ -94,22 +102,20 @@ public class Polynomial {
                         return -1;
                     }
                     coe = Float.parseFloat(s.substring(0, i));
-                    return coe;
                 }
             }
         }
         return coe;
     }
+
     // Suma el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     public Polynomial add(Polynomial p) {
-
         if (this.nums.length != p.nums.length) {
             if (p.nums.length < this.nums.length) {
-                p.nums =addNotEquals(p.nums, this.nums);
+                p.nums = addNotEquals(p.nums, this.nums);
             } else {
                 this.nums = addNotEquals(this.nums,p.nums);
             }
-
         }
         float [] sum = new float[p.nums.length];
             for (int i = 0; i < this.nums.length; i++) {
@@ -130,7 +136,15 @@ public class Polynomial {
 
     // Multiplica el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     public Polynomial mult(Polynomial p2) {
-        return null;
+        float [] mult = new float[p2.nums.length+this.nums.length-1];
+        for (int i = 0; i < this.nums.length; i++) {
+            float numactual = this.nums[i];
+            for (int j = 0; j < p2.nums.length; j++) {
+                mult[j+i] += numactual*p2.nums[j];
+            }
+        }
+        Polynomial multiplicat = new Polynomial(mult);
+        return multiplicat;
     }
 
     // Divideix el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
@@ -138,7 +152,6 @@ public class Polynomial {
     public Polynomial[] div(Polynomial p2) {
        return null;
     }
-
     // Troba les arrels del polinomi, ordenades de menor a major
     public float[] roots() {
         return null;
@@ -148,106 +161,91 @@ public class Polynomial {
     @Override
     public boolean equals(Object o) {
         Polynomial p = (Polynomial) o;
-        return p.toString().equals(this.toString());
+        return this.toString().equals(p.toString());
     }
 
     // Torna la representació en forma de String del polinomi. Override d'un mètode de la classe Object
     @Override
     public String toString() {
+
+        if (this.nums[0] == 0) {
+            return "0";
+        }
+
         StringBuilder sb =  new StringBuilder();
+
         for (int i = 0; i < this.nums.length; i++) {
             if (this.nums[i] == 0) {
-                if (i == 0 && this.nums[i] == 0 && this.nums.length > 0) {
-                    if (this.nums.length > 1 && this.nums[1] > 0) {
-                        continue;
-                    }
-                    return "0";
-                }
                 continue;
             }
             if (this.nums.length == 1) {
-                if (this.nums[i] == 0 )  {
-                    return "0";
+                return String.valueOf(this.nums[i]);
+            }
+            else if (this.nums.length == 2) {
+                if (this.nums[i] == 1 && i == 0) {
+                    sb.append("x");
                 }
-                if (this.nums[i] != 0) {
-                    sb.append((int) this.nums[i]);
-                    continue;
+                else if (this.nums[i] != 1 && i == 0) {
+                    sb.append((int) this.nums[i] + "x");
+                }
+                else if (this.nums[i] != 1 && this.nums[i] != 0 && this.nums[i] > 0 && i > 0) {
+                    sb.append(" + " + (int) this.nums[i]);
+                }
+                else if (this.nums[i] != 1 && this.nums[i] != 0 && this.nums[i] < 0 && i > 0) {
+                    sb.append(" - " + (int) this.nums[i]*-1);
                 }
             }
-                if (this.nums.length == 2) {
-                    if (this.nums[i] == 1 && i == 0) {
-                        sb.append("x");
-                        continue;
+            else if (this.nums.length > 2) {
+                if (i == 0) {
+                    if (this.nums[i] == 1) {
+                        sb.append("x^" + (this.nums.length - 1));
+                    } else if (this.nums[i] == -1) {
+                        sb.append("-x^" + (this.nums.length-1));
                     }
-                    if (this.nums[i] == 0) {
-                        sb.append("0");
-                        continue;
-                    }
-                    if (this.nums[i] != 1 && i == 0) {
-                        sb.append((int) this.nums[i] + "x");
-                        continue;
-                    }
-
-                    if (this.nums[i] != 1 && this.nums[i] != 0 && this.nums[i] > 0 && i > 0) {
-                        sb.append(" + " + (int) this.nums[i]);
-                        continue;
-                    }
-                    if (this.nums[i] != 1 && this.nums[i] != 0 && this.nums[i] < 0 && i > 0) {
-                        sb.append(" - " + (int) this.nums[i]*-1);
-                        continue;
+                    else if (this.nums[i] < 1 || this.nums[i] > 1){
+                        sb.append((int) this.nums[i] + "x^" + (this.nums.length-1));
                     }
                 }
-            if (this.nums.length > 2 ) {
-                if (this.nums[i] == 1 && this.nums.length-i == this.nums.length) {
-                    sb.append("x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] == -1 && this.nums.length-i == this.nums.length) {
-                    sb.append("-x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-i == this.nums.length) {
-                    sb.append((int) this.nums[i] + "x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-i-1 > 1 && this.nums[i] > 0) {
-                    sb.append(" + " + (int) this.nums[i] + "x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-i-1 > 1 && this.nums[i] < 0) {
-                    sb.append(" - " + (int) this.nums[i]*-1 + "x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] == 1 && this.nums.length-i-1 > 1) {
-                    sb.append(" + x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (this.nums[i] == -1 && this.nums.length-i-1 > 1) {
-                    sb.append(" - x^" + (this.nums.length-1-i));
-                    continue;
-                }
-                if (i > 0 && this.nums.length == 3 && this.nums[0] == 0 && this.nums[1] > 0 || this.nums[1] < 0) {
-                    sb.append((int) this.nums[1] + "x");
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 1 && this.nums[i] > 0) {
-                    sb.append(" + " + (int) this.nums[i] + "x");
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 1 && this.nums[i] < 0) {
-                    sb.append(" - " + (int) this.nums[i]*-1 + "x");
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 0 && this.nums[i] < 0) {
-                    sb.append(" - " + (int) this.nums[i]*-1);
-                    continue;
-                }
-                if (this.nums[i] != 0 && this.nums[i] != 1 && this.nums.length-1-i == 0 && this.nums[i] > 0) {
-                    sb.append(" + " + (int) this.nums[i]);
-                    continue;
-                }
-                if (!sb.toString().contains("0") && i > 0) {
-                    sb.append("0");
+                else if (i > 0) {
+                    if (this.nums.length-i-1 > 1) {
+                        if (this.nums[i] == 1) {
+                            sb.append(" + x^" + (this.nums.length-1-i));
+                        } else if (this.nums[i] == -1) {
+                            sb.append(" - x^" + (this.nums.length-1-i));
+                        }
+                        else if (this.nums[i] > 1){
+                            sb.append((" + " + (int) this.nums[i] + "x^" + (this.nums.length-1-i)));
+                        }
+                        else if (this.nums[i] < 1){
+                            sb.append((" - " + (int) this.nums[i]*-1 + "x^" + (this.nums.length-1-i)));
+                        }
+                    } else if (this.nums.length-i-1 == 1) {
+                        if (this.nums[i] == 1) {
+                            sb.append(" + x");
+                        }
+                        else if (this.nums[i] == -1) {
+                            sb.append(" - x");
+                        }
+                        else if (this.nums[i] > 1){
+                            sb.append(" + " + (int) this.nums[i] + "x");
+                        }
+                        else if (this.nums[i] < 1){
+                            sb.append(" - " + (int) this.nums[i]*-1 + "x");
+                        }
+                    } else if (this.nums.length-i-1 == 0) {
+                        if (this.nums[i] == 1) {
+                            sb.append(" + 1");
+                        }
+                        else if (this.nums[i] == -1) {
+                            sb.append(" - 1");
+                        }
+                        else if (this.nums[i] > 1){
+                            sb.append(" + " + (int) this.nums[i]);
+                        }
+                        else if (this.nums[i] < 1){
+                            sb.append(" - " + (int) this.nums[i]*-1);
+                        }
+                    }
                 }
             }
         }

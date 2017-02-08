@@ -34,15 +34,16 @@ public class Polynomial {
             float coeficient = treuCoe(ss)*signe;
             setCoef(coeficient,exponent);
         }
-        flipIt();
+        this.nums = flipIt(this.nums);
     }
 
-    private void flipIt() {
-        for (int i = 0; i < this.nums.length / 2; i++) {
-            float aux = this.nums[i];
-            this.nums[i] = this.nums[this.nums.length-i-1];
-            this.nums[this.nums.length-i-1] = aux;
+    private float [] flipIt(float [] p) {
+        for (int i = 0; i < p.length / 2; i++) {
+            float aux = p[i];
+            p[i] = p[p.length-i-1];
+            p[p.length-i-1] = aux;
         }
+        return p;
     }
 
     private void setCoef(float coef, int expo) {
@@ -89,6 +90,9 @@ public class Polynomial {
         } else {
             for (int i = 0; i < s.length(); i++) {
                 if (s.charAt(i) == 'x' && i > 0) {
+                    if (i > 0 && s.charAt(i-1) == '-') {
+                        return -1;
+                    }
                     coe = Float.parseFloat(s.substring(0, i));
                     return coe;
                 }
@@ -98,7 +102,30 @@ public class Polynomial {
     }
     // Suma el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     public Polynomial add(Polynomial p) {
-        return null;
+
+        if (this.nums.length != p.nums.length) {
+            if (p.nums.length < this.nums.length) {
+                p.nums =addNotEquals(p.nums, this.nums);
+            } else {
+                this.nums = addNotEquals(this.nums,p.nums);
+            }
+
+        }
+        float [] sum = new float[p.nums.length];
+            for (int i = 0; i < this.nums.length; i++) {
+                sum[i] = p.nums[i]+this.nums[i];
+            }
+        Polynomial sumat = new Polynomial(sum);
+        return sumat;
+    }
+
+    private float [] addNotEquals(float [] p, float [] p1) {
+        float [] arraybe = new float[p1.length];
+            for (int i = 0; i < p.length; i++) {
+                    arraybe[i] = p[p.length-i-1];
+            }
+            flipIt(arraybe);
+        return arraybe;
     }
 
     // Multiplica el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou

@@ -48,25 +48,24 @@ public class Polynomial {
             }
             setCoef(coeficient,exponent);
         }
-        this.nums = flipIt(this.nums);
+        flipIt(this.nums);
     }
 
-    private float [] flipIt(float [] p) {
+    private void flipIt(float [] p) {
         for (int i = 0; i < p.length / 2; i++) {
             float aux = p[i];
             p[i] = p[p.length-i-1];
             p[p.length-i-1] = aux;
         }
-        return p;
     }
 
     private void setCoef(float coef, int expo) {
         if (expo >= this.nums.length) {
             float [] aux = new float[expo+1];
-            aux[expo] += coef;
+            aux[expo] = coef;
             for (int i = 0; i < aux.length; i++) {
                 if (i <= this.nums.length-1) {
-                    aux[i] += this.nums[i];
+                    aux[i] = this.nums[i];
                 }
             }
             this.nums = aux;
@@ -150,7 +149,38 @@ public class Polynomial {
     // Divideix el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     // Torna el quocient i també el residu (ambdós polinomis)
     public Polynomial[] div(Polynomial p2) {
-       return null;
+        Polynomial resta = new Polynomial();
+        Polynomial cocient = new Polynomial();
+        cocient.nums = new float[this.nums.length-1];
+        for (int i = 0; i < cocient.nums.length; i++) {
+            for (int j = 0; j <= cocient.nums[i]+1;j++) {
+                if (this.nums[i] / j == this.nums[i]) {
+                    int signe = 1;
+                    if (this.nums[i] < 0) {
+                        signe = -1;
+                    }
+                    cocient.nums[i] = j*signe;
+                    resta = cocient.mult(p2);
+                    resta.nums[i] *= -1;
+                    this.add(resta);
+                    break;
+                }
+
+                /**else if (this.nums[i] / j != this.nums[i] && this.nums[i] / j+1 < this.nums[i]) {
+                    cocient.nums[i] = j;
+                    resta = cocient.mult(p2);
+                    resta.nums[i] *= -1;
+                    this.add(resta);
+                    break;
+                }
+                 */
+            }
+
+        }
+
+
+        Polynomial [] divisio = {cocient , resta};
+       return divisio;
     }
     // Troba les arrels del polinomi, ordenades de menor a major
     public float[] roots() {

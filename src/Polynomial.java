@@ -164,6 +164,12 @@ public class Polynomial {
         return p2;
     }
 
+    private void signeChange() {
+        for (int i = 0; i < this.nums.length; i++) {
+            this.nums[i]*= -1;
+        }
+    }
+
     private float getMax(){
         float num = 0;
         for (int i = 0; i < this.nums.length; i++) {
@@ -185,32 +191,30 @@ public class Polynomial {
 
     // Divideix el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     // Torna el quocient i també el residu (ambdós polinomis)
-    public Polynomial[] div(Polynomial p2) {
-        Polynomial actual = this;
+    public Polynomial[] div(Polynomial divisor) {
+        Polynomial residu = this;
         Polynomial cocient = new Polynomial();
-        while (actual.getExp() >= p2.getExp() && actual.nums[actual.getExp()] != 0) {
-            float cf1 = actual.getMax();
-            int exp1 = actual.getExp();
+        while (residu.getExp() >= divisor.getExp() && residu.nums[residu.getExp()] != 0) {
+            float cf1 = residu.getMax();
+            int exp1 = residu.getExp();
 
-            float cf2 = p2.getMax();
-            int exp2 = p2.getExp();
+            float cf2 = divisor.getMax();
+            int exp2 = divisor.getExp();
 
             float rescf = cf1 / cf2;
             int resexp = exp1 - exp2;
 
             cocient.setCoef(rescf, resexp);
 
-            Polynomial resta = p2.simpleMult(rescf, resexp);
+            Polynomial resta = divisor.simpleMult(rescf, resexp);
 
-            for (int j = 0; j < resta.nums.length; j++) {
-                resta.nums[j]*= -1;
-            }
+            resta.signeChange();
 
-            actual = actual.add(resta);
+            residu = residu.add(resta);
         }
 
         cocient.flipIt(cocient.nums);
-        Polynomial [] divisio = {cocient, actual};
+        Polynomial [] divisio = {cocient, residu};
         return divisio;
         }
     // Troba les arrels del polinomi, ordenades de menor a major

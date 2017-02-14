@@ -1,4 +1,3 @@
-
 public class Polynomial {
     float [] nums = { 0 };
 
@@ -138,6 +137,9 @@ public class Polynomial {
         float [] mult = new float[p2.nums.length+this.nums.length-1];
         for (int i = 0; i < this.nums.length; i++) {
             float numactual = this.nums[i];
+            if (numactual == 0) {
+                continue;
+            }
             for (int j = 0; j < p2.nums.length; j++) {
                 mult[j+i] += numactual*p2.nums[j];
             }
@@ -146,42 +148,71 @@ public class Polynomial {
         return multiplicat;
     }
 
+    private Polynomial simpleMult(float num, int pos) {
+        float [] res = new float[pos+this.nums.length];
+        for (int i = 0; i < this.nums.length; i++) {
+            if (i == this.nums.length) {
+                break;
+            }
+            float actual = this.nums[i];
+            if (actual == 0) {
+                continue;
+            }
+                res[i]+= num*actual;
+        }
+        Polynomial p2 = new Polynomial(res);
+        return p2;
+    }
+
+    private float getMax(){
+        float num = 0;
+        for (int i = 0; i < this.nums.length; i++) {
+            if (this.nums[i] != 0) {
+                 return this.nums[i];
+            }
+        }
+        return num;
+    }
+
+    private int getExp() {
+        for (int i = 0; i < this.nums.length; i++) {
+            if (this.nums[i] != 0) {
+                return this.nums.length-i-1;
+            }
+        }
+        return this.nums.length-1;
+    }
+
     // Divideix el polinomi amb un altre. No modifica el polinomi actual (this). Genera un de nou
     // Torna el quocient i també el residu (ambdós polinomis)
     public Polynomial[] div(Polynomial p2) {
-        Polynomial resta = new Polynomial();
+        Polynomial actual = this;
         Polynomial cocient = new Polynomial();
-        cocient.nums = new float[this.nums.length-1];
-        for (int i = 0; i < cocient.nums.length; i++) {
-            for (int j = 0; j <= cocient.nums[i]+1;j++) {
-                if (this.nums[i] / j == this.nums[i]) {
-                    int signe = 1;
-                    if (this.nums[i] < 0) {
-                        signe = -1;
-                    }
-                    cocient.nums[i] = j*signe;
-                    resta = cocient.mult(p2);
-                    resta.nums[i] *= -1;
-                    this.add(resta);
-                    break;
-                }
+        while (actual.getExp() >= p2.getExp() && actual.nums[actual.getExp()] != 0) {
+            float cf1 = actual.getMax();
+            int exp1 = actual.getExp();
 
-                /**else if (this.nums[i] / j != this.nums[i] && this.nums[i] / j+1 < this.nums[i]) {
-                    cocient.nums[i] = j;
-                    resta = cocient.mult(p2);
-                    resta.nums[i] *= -1;
-                    this.add(resta);
-                    break;
-                }
-                 */
+            float cf2 = p2.getMax();
+            int exp2 = p2.getExp();
+
+            float rescf = cf1 / cf2;
+            int resexp = exp1 - exp2;
+
+            cocient.setCoef(rescf, resexp);
+
+            Polynomial resta = p2.simpleMult(rescf, resexp);
+
+            for (int j = 0; j < resta.nums.length; j++) {
+                resta.nums[j]*= -1;
             }
 
+            actual = actual.add(resta);
         }
 
-
-        Polynomial [] divisio = {cocient , resta};
-       return divisio;
-    }
+        cocient.flipIt(cocient.nums);
+        Polynomial [] divisio = {cocient, actual};
+        return divisio;
+        }
     // Troba les arrels del polinomi, ordenades de menor a major
     public float[] roots() {
         return null;
@@ -197,13 +228,10 @@ public class Polynomial {
     // Torna la representació en forma de String del polinomi. Override d'un mètode de la classe Object
     @Override
     public String toString() {
-
         if (this.nums[0] == 0) {
             return "0";
         }
-
         StringBuilder sb =  new StringBuilder();
-
         for (int i = 0; i < this.nums.length; i++) {
             if (this.nums[i] == 0) {
                 continue;
@@ -214,6 +242,8 @@ public class Polynomial {
             else if (this.nums.length == 2) {
                 if (this.nums[i] == 1 && i == 0) {
                     sb.append("x");
+                }else if (this.nums[i] == -1 && i == 0) {
+                    sb.append("-x");
                 }
                 else if (this.nums[i] != 1 && i == 0) {
                     sb.append((int) this.nums[i] + "x");

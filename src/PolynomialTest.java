@@ -124,6 +124,7 @@ public class PolynomialTest {
         Polynomial p1, p2;
         Polynomial[] res;
 
+
         p1 = new Polynomial("x^4 - 6x^2 + 8");
         p2 = new Polynomial("x - 1");
         res = p1.div(p2);
@@ -135,6 +136,7 @@ public class PolynomialTest {
         res = p1.div(p2);
         assertEquals(new Polynomial("2x + 8"), res[0]);
         assertEquals(new Polynomial("0"), res[1]);
+
 
         p1 = new Polynomial("-5x^7 + 42x^3 - 9");
         p2 = new Polynomial("x^2 + 1");

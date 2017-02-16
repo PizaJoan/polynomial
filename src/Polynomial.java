@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Polynomial {
     float[] nums = {0};
 
@@ -228,17 +230,82 @@ public class Polynomial {
                 float[] sol = Arrel(this);
                 return sol;
             } else if (this.nums.length - 1 > 2) {
-                if (this.nums.length - 1 == 4 && this.nums[2] != 0 && this.nums[4] != 0) {
+                if (this.nums.length - 1 == 4 && this.nums[1] == 0 && this.nums[3] == 0 && this.nums[2] != 0) {
                     float [] sol = biquaD();
                     return sol;
-                } else {
+                } else if (this.nums[1] == 0 ){
                     float[] sol = Arrelmasdos(this.nums);
+                    return sol;
+                } else {
+                    float [] divisors = getDivisors(this.nums[this.nums.length-1]);
+                    float [] sol = diferent(divisors);
                     return sol;
                 }
             }
         }
         return null;
     }
+
+    private float [] getDivisors(float num) {
+        int cont = 0;
+        for (int i = 0; i < num; i++) {
+            if (num % i == 0) {
+                cont++;
+            }
+        }
+        float [] divisors = new float[cont];
+        cont = 0;
+        for (int i = 0; i < num; i++) {
+            if (num % i == 0) {
+                divisors[cont] = i;
+                cont++;
+            }
+        }
+        return divisors;
+    }
+
+    private void llevazeros() {
+        for (int i = 0; i < this.nums.length; i++) {
+            if (this.nums[i] == 0) {
+                float [] be = new float[i];
+                for (int j = 0; j < be.length; j++) {
+                    be[j] = this.nums[j];
+                }
+                this.nums = be;
+            }
+        }
+    }
+
+    private void ruffini(float num) {
+        for (int i = 0; i < this.nums.length; i++) {
+            this.nums[i] *= num;
+            if (i < this.nums.length-1) {
+                this.nums[i+1] += this.nums[i];
+            } else {
+                break;
+            }
+        }
+    }
+
+    private float [] diferent(float [] divisors) {
+        float [] sol = new float[4];
+        for (int i = 0; i < divisors.length; i++) {
+            this.ruffini(divisors[i]);
+            if (this.nums[this.nums.length-1] == 0) {
+                sol[i] = divisors[i];
+                llevazeros();
+                if (this.nums.length - 1 == 2) {
+                    float [] aux = Arrel(this);
+                    sol[2] = aux[0];
+                    sol[3] = aux[1];
+                    Arrays.sort(sol);
+                    return sol;
+                }
+            }
+        }
+        return null;
+    }
+
     private float [] biquaD() {
         float[] sol = this.nums;
         float[] aux = {sol[0], sol[2], sol[4]};
@@ -281,22 +348,26 @@ public class Polynomial {
     }
 
     private float[] arrelmasdosprimajor1(double grade, double solpos) {
-        double sol = Math.pow(solpos, 1.0 / grade);
         if (grade % 2 == 0) {
-            float[] retorn = new float[2];
-            retorn[0] = (float) sol * -1;
-            retorn[1] = (float) sol;
-            return retorn;
+            double sol = Math.pow(solpos*-1, 1.0 / grade);
+            if (sol > 0) {
+                float[] retorn = new float[2];
+                retorn[0] = (float) sol * -1;
+                retorn[1] = (float) sol;
+                return retorn;
+            } else {
+                return null;
+            }
         } else {
-            float[] retorn = {(float) sol};
+            double sol = Math.pow(solpos, 1.0/grade);
+            float[] retorn = {(float) sol*-1};
             return retorn;
         }
     }
 
-
     private float[] Arrelmasdos(float[] nums) {
         double grade = nums.length - 1;
-        double solpos = nums[nums.length - 1]*-1;
+        double solpos = nums[nums.length - 1];
         if (nums[0] == 1) {
             float[] sol = arrelmasdosprimajor1(grade, solpos);
             return sol;
